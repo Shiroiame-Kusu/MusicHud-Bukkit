@@ -115,6 +115,7 @@ public class MusicPlayerService {
                         }
                     } else {
                         switchedToPlay = musicQueue.poll();
+                        // Always send queue refresh to notify clients of the updated queue state
                         sendRefreshQueueToAll();
                     }
                     
@@ -241,15 +242,21 @@ public class MusicPlayerService {
                 ));
         }
         
+        boolean wasRunning = running;
+        
         synchronized (musicQueue) {
             musicQueue.add(music);
         }
         
-        sendRefreshQueueToAll();
-        
         // Start music service if not running
         if (!running) {
             start();
+        }
+        
+        // Only send queue refresh if service was already running
+        // If service just started, musicPusherLoop will send the correct state
+        if (wasRunning) {
+            sendRefreshQueueToAll();
         }
         
         plugin.getLogger().info(player.getName() + " added music " + musicId + " to queue");
