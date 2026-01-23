@@ -11,6 +11,9 @@ import org.bukkit.entity.Player;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Service for managing music playback on the server.
@@ -21,6 +24,11 @@ public class MusicPlayerService {
     private final Map<Player, Set<Playlist>> idlePlaySources = new ConcurrentHashMap<>();
     private final CurrentVoteInfo currentVoteInfo = new CurrentVoteInfo();
     private final Random random = new Random();
+    private final ExecutorService queueExecutor = Executors.newSingleThreadExecutor(r -> {
+        Thread thread = new Thread(r, "MusicHud-QueueExecutor");
+        thread.setDaemon(true);
+        return thread;
+    });
     
     private volatile MusicDetail currentMusicDetail = MusicDetail.NONE;
     private volatile ZonedDateTime nowPlayingStartTime = ZonedDateTime.now();
@@ -55,6 +63,11 @@ public class MusicPlayerService {
             pusherThread = null;
         }
         plugin.getLogger().info("Music player service stopped");
+    }
+
+    public synchronized void shutdownAll() {
+        shutdown();
+        queueExecutor.shutdownNow();
     }
 
     public boolean isRunning() {
@@ -207,6 +220,12 @@ public class MusicPlayerService {
      * Push a music to the queue.
      */
     public void pushMusicToQueue(long musicId, Player player) {
+        queueExecutor.execute(() -> {
+            pushMusicToQueueInternal(musicId, player);
+        });
+    }
+
+    private void pushMusicToQueueInternal(long musicId, Player player) {
         MusicDetail music = fetchMusicDetail(musicId, player);
         if (music == null) {
             plugin.getLogger().warning("Failed to fetch music detail for ID " + musicId);

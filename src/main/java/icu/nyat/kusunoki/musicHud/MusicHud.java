@@ -51,7 +51,7 @@ public class MusicHud extends JavaPlugin {
     public void onDisable() {
         // Stop music playback
         if (musicPlayerService != null) {
-            musicPlayerService.shutdown();
+            musicPlayerService.shutdownAll();
         }
 
         // Unregister channels

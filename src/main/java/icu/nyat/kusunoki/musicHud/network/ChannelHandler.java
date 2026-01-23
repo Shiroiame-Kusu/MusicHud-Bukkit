@@ -207,8 +207,21 @@ public class ChannelHandler implements PluginMessageListener {
     }
     
     private void handleRemoveMusicFromQueue(Player player, ByteBuf buf) {
-        long musicId = PacketCodecs.readLong(buf);
-        plugin.logDebug("Player %s removing music %d from queue", player.getName(), musicId);
+        int readable = buf.readableBytes();
+        if (readable < Integer.BYTES + Long.BYTES) {
+            plugin.getLogger().warning("RemoveMusic payload too short: " + readable + " bytes");
+            return;
+        }
+
+//        byte op = buf.readByte();
+        int index = buf.readInt();
+        long musicId = buf.readLong();
+
+        plugin.logDebug(
+                "Player %s removing music %d from queue (index=%d, readable=%d)",
+                player.getName(), musicId, index, readable
+        );
+
         plugin.getMusicPlayerService().removeMusicFromQueue(musicId, player);
     }
 
