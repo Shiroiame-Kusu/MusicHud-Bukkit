@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '9.2.2'
+}
+
+group = rootProject.maven_group
+version = "$rootProject.plugin_version-$rootProject.mod_version"
+
+base {
+    archivesName = "$rootProject.archives_name-bukkit"
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+dependencies {
+    // Spigot API
+    compileOnly 'org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT'
+
+    // Netty for ByteBuf handling
+    implementation "io.netty:netty-buffer:$rootProject.netty_version"
+    compileOnly "org.jetbrains:annotations:24.1.0"
+
+    // JSON processing (optional, for API calls)
+    implementation "com.fasterxml.jackson.core:jackson-databind:$rootProject.jackson_version"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+processResources {
+    filteringCharset = 'UTF-8'
+    // Expand variables like ${version} in plugin.yml
+    filesMatching('plugin.yml') {
+        expand(
+                'version': project.version
+        )
+    }
+}
+
+shadowJar {
+    archiveClassifier.set('')
+
+    // Relocate netty to avoid conflicts with server's netty
+    relocate 'io.netty', 'icu.nyat.kusunoki.musicHud.libs.netty'
+
+    dependencies {
+        // Include netty-buffer
+        include(dependency('io.netty:netty-buffer'))
+        include(dependency('io.netty:netty-common'))
+        include(dependency('com.fasterxml.jackson.core:.*'))
+    }
+
+    minimize()
+    destinationDirectory.set(file("${projectDir}/target"))
+}
+
+build {
+    dependsOn shadowJar
+}
+
