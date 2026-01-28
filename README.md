@@ -12,14 +12,13 @@ MusicHud 的 Bukkit/Spigot/Paper 服务端插件实现。
 - 支持空闲歌单播放
 - 支持匿名/Cookie 登录
 
-## 运行环境
-- Java 21
-- Spigot/Paper 1.21.*（`api-version: 1.21`）
-
 ## 安装
 1. 将构建产物放入服务器 `plugins/` 目录
 2. 启动服务器生成配置文件
 3. 按需修改配置并重启或执行重载命令
+4. 部署 Netease Cloud Music API Enhanced (https://github.com/neteasecloudmusicapienhanced/api-enhanced)，请自行参考api-enhanced的readme进行部署
+5. 如果不使用 NCM API Enhanced 的默认端口 ( 3000 ) 或在其他服务器上部署，需要修改配置文件的 base-url 属性
+
 
 ## 配置
 配置文件位置：`plugins/MusicHud-Bukkit/config.yml`
