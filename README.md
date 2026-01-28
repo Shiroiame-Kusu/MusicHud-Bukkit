@@ -4,6 +4,7 @@ MusicHud 的 Bukkit/Spigot/Paper 服务端插件实现。
 
 ### ***你需要先在客户端安装mod才能使用这个插件！！！***
 - Mod 项目链接：**https://github.com/Etern-34520/MusicHud**
+- Modrinth: **https://modrinth.com/mod/music-hud**
 
 ## 功能简介
 - 与客户端 Mod 通过 Plugin Messaging 通讯并同步播放状态
