@@ -1,6 +1,6 @@
 # MusicHud-Bukkit
 
-MusicHud 的 Bukkit/Spigot/Paper 服务端插件实现。
+MusicHud 的 Bukkit/Spigot/Paper 服务端插件实现。**[Modrinth下载链接](https://modrinth.com/plugin/musichud-bukkit)**
 
 ### ***你需要先在客户端安装mod才能使用这个插件！！！***
 - Mod 项目链接：**https://github.com/Etern-34520/MusicHud**
